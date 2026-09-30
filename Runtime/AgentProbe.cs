@@ -105,7 +105,7 @@ namespace Kruty1918.AgentVerify
             foreach (var go in EnumerateAll())
             {
                 var s = go.GetComponent<Selectable>();
-                if (s != null && s.IsActive() && s.interactable) list.Add(PathOf(go.transform));
+                if (s != null && go.activeInHierarchy && s.interactable) list.Add(PathOf(go.transform));
             }
             return list;
         }

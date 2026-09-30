@@ -11,8 +11,10 @@ checklist format:
    `Root/Child/Path`, `Exists`, `IsActive`, `IsVisible` (renderer enabled,
    on screen, or UI graphic with alpha), `Interactables()` (enabled
    Selectables), `DescribeJson()` (full dump), `Summary()` (quick text).
-2. **Screenshot** (`AgentScreenshot`) — `Camera.Render` into a
-   RenderTexture → PNG. Works with `-batchmode`, no swapchain needed.
+2. **Screenshot** (`AgentScreenshot`) — play mode default is
+   `ScreenCapture` (whole game view *including* Screen-Space-Overlay UI,
+   which camera renders cannot see); a named `camera`, or edit mode, uses
+   `Camera.Render` into a RenderTexture — headless, no swapchain needed.
 3. **Input** (`AgentInput`) — `Click(name)`, `Tap(px)`, `Drag(a,b)` go
    through `ExecuteEvents` / `EventSystem.RaycastAll`, so they trigger the
    same handlers a real user would. `Invoke(name, method)` is a
@@ -25,7 +27,7 @@ checklist format:
 
 ## The commands file — agent interface
 
-`Temp/agentverify.commands.json` → `Temp/agentverify.results.json`
+`agentverify.commands.json` → `agentverify.results.json`
 (paths overridable via `AGENTVERIFY_COMMANDS` / `AGENTVERIFY_RESULTS`).
 
 Execution:

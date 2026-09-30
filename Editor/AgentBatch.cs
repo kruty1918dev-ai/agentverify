@@ -8,9 +8,9 @@ namespace Kruty1918.AgentVerify.EditorTools
     /// <summary>
     /// Headless entry points for `Unity.exe -executeMethod`:
     ///
-    ///   AgentBatch.RunEditMode   — executes Temp/agentverify.commands.json in
+    ///   AgentBatch.RunEditMode   — executes agentverify.commands.json in
     ///                              the open editor state (no play mode), writes
-    ///                              Temp/agentverify.results.json, exits 0/2.
+    ///                              agentverify.results.json, exits 0/2.
     ///
     ///   AgentBatch.RunPlayMode   — enters play mode; AgentAutoRun executes the
     ///                              commands against the live scene, writes the
@@ -55,10 +55,15 @@ namespace Kruty1918.AgentVerify.EditorTools
             }
             var resultsPath = AgentAutoRun.ResultsPath();
             if (File.Exists(resultsPath)) File.Delete(resultsPath);
+            _startedAt = EditorApplication.timeSinceStartup;
             EditorApplication.playModeStateChanged += OnPlayModeChanged;
             EditorApplication.update += WatchResults;
             EditorApplication.EnterPlaymode();
         }
+
+        /// <summary>Safety net: a broken scene/script must never hang a batch run forever.</summary>
+        const double WatchdogSeconds = 300;
+        static double _startedAt;
 
         static void OnPlayModeChanged(PlayModeStateChange state)
         {
@@ -75,6 +80,15 @@ namespace Kruty1918.AgentVerify.EditorTools
         static double _lastPoll;
         static void WatchResults()
         {
+            if (EditorApplication.timeSinceStartup - _startedAt > WatchdogSeconds)
+            {
+                EditorApplication.update -= WatchResults;
+                EditorApplication.playModeStateChanged -= OnPlayModeChanged;
+                Debug.LogError("[AgentVerify] watchdog: no results within 300s — aborting");
+                if (EditorApplication.isPlaying) EditorApplication.isPlaying = false;
+                EditorApplication.Exit(1);
+                return;
+            }
             var path = AgentAutoRun.ResultsPath();
             if (!File.Exists(path)) return;
             if (EditorApplication.timeSinceStartup - _lastPoll < 0.25) return;

@@ -12,7 +12,7 @@ namespace Kruty1918.AgentVerify
     ///
     /// Command file resolution order:
     ///   1) env var AGENTVERIFY_COMMANDS (absolute path)
-    ///   2) &lt;project&gt;/Temp/agentverify.commands.json
+    ///   2) &lt;project&gt;/agentverify.commands.json (project root — Temp is wiped on startup)
     /// Results default to the same folder: agentverify.results.json, or the
     /// path in env var AGENTVERIFY_RESULTS.
     /// </summary>
@@ -25,14 +25,15 @@ namespace Kruty1918.AgentVerify
         {
             var env = System.Environment.GetEnvironmentVariable("AGENTVERIFY_COMMANDS");
             if (!string.IsNullOrEmpty(env)) return env;
-            return Path.Combine(ProjectRoot(), Path.Combine("Temp", CommandsFileName));
+            // Project root, NOT Temp/ — Unity wipes Temp on every startup.
+            return Path.Combine(ProjectRoot(), CommandsFileName);
         }
 
         public static string ResultsPath()
         {
             var env = System.Environment.GetEnvironmentVariable("AGENTVERIFY_RESULTS");
             if (!string.IsNullOrEmpty(env)) return env;
-            return Path.Combine(ProjectRoot(), Path.Combine("Temp", ResultsFileName));
+            return Path.Combine(ProjectRoot(), ResultsFileName);
         }
 
         /// <summary>Project root = parent of Assets (Application.dataPath).</summary>
@@ -68,9 +69,10 @@ namespace Kruty1918.AgentVerify
                 }
                 var results = new List<AgentCommandResult>();
                 yield return AgentCommands.RunAllAsync(commands, results);
+                // Let async work (e.g. ScreenCapture writes) land — plain frame
+                // yields, since WaitForEndOfFrame never fires without a device.
+                yield return new WaitForSecondsRealtime(0.5f);
                 AgentCommands.WriteResults(ResultsPath(), results);
-                if (Application.isBatchMode)
-                    Application.Quit(AllOk(results) ? 0 : 2);
             }
 
             static bool AllOk(List<AgentCommandResult> results)

@@ -54,7 +54,7 @@ namespace Kruty1918.AgentVerify
                 case "interactable":
                     var go = AgentProbe.Find(target);
                     var s = go != null ? go.GetComponent<Selectable>() : null;
-                    r.ok = s != null && s.IsActive() && s.interactable;
+                    r.ok = s != null && go.activeInHierarchy && s.interactable;
                     r.detail = r.ok ? "interactable" : "not interactable";
                     break;
                 case "text-contains":

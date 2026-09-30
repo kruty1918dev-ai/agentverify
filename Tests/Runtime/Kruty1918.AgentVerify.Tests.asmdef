@@ -2,7 +2,7 @@
     "name": "Kruty1918.AgentVerify.Tests",
     "rootNamespace": "Kruty1918.AgentVerify.Tests",
     "references": ["Kruty1918.AgentVerify", "UnityEngine.UI", "UnityEngine.TestRunner", "UnityEditor.TestRunner"],
-    "includePlatforms": [],
+    "includePlatforms": ["Editor"],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,

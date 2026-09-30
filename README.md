@@ -35,7 +35,7 @@ or a local `file:` path. Requires uGUI (`com.unity.ugui`) for input simulation �
 
 ## The agent loop (headless)
 
-1. Write `Temp/agentverify.commands.json` in the project:
+1. Write `agentverify.commands.json` in the project:
 
 ```json
 {
@@ -66,7 +66,7 @@ Unity.exe -batchmode -projectPath . \
   -executeMethod Kruty1918.AgentVerify.EditorTools.AgentBatch.RunEditMode
 ```
 
-3. Read `Temp/agentverify.results.json`:
+3. Read `agentverify.results.json`:
 
 ```json
 {"allOk": false, "results": [
@@ -85,7 +85,7 @@ PNG files are written wherever the commands asked.
 |---|---|---|
 | `loadScene` | `target` | `SceneManager.LoadScene(target)` — name or build path |
 | `wait` | `seconds` | realtime wait (coroutine in play mode → time/anims advance) |
-| `screenshot` | `output`, `camera?`, `width?`, `height?` | render camera → PNG file |
+| `screenshot` | `output`, `camera?`, `width?`, `height?` | PNG — full game view incl. overlay UI in play mode; `camera` forces a headless render |
 | `describe` | `output?` | full scene JSON dump → file or result payload |
 | `summary` | — | compact text: scenes, main camera, interactables, object count |
 | `click` | `target` | click UI element by name or `Path/To/Object` |

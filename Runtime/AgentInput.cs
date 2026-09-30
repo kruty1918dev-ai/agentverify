@@ -17,10 +17,10 @@ namespace Kruty1918.AgentVerify
         public static bool Click(string query)
         {
             var go = AgentProbe.Find(query);
-            if (go == null || EventSystem.current == null) return false;
+            if (go == null) return false;
             var s = go.GetComponent<Selectable>();
-            if (s != null && (!s.IsActive() || !s.interactable)) return false;
-            var ped = new PointerEventData(EventSystem.current)
+            if (s != null && (!go.activeInHierarchy || !s.interactable)) return false;
+            var ped = new PointerEventData(CurrentES())
             {
                 position = AgentProbe.ScreenPoint(AgentProbe.PathOf(go.transform))
             };
@@ -30,13 +30,21 @@ namespace Kruty1918.AgentVerify
             return true;
         }
 
+        /// <summary>EventSystem.current, or any EventSystem in the scene (edit-mode safe).</summary>
+        static EventSystem CurrentES()
+        {
+            var es = EventSystem.current;
+            if (es == null) es = Object.FindAnyObjectByType<EventSystem>();
+            return es;
+        }
+
         /// <summary>
         /// Tap at a screen-space pixel position through the real EventSystem
         /// raycast — drives whatever UI or world object sits there.
         /// </summary>
         public static bool Tap(Vector2 screenPos)
         {
-            var es = EventSystem.current;
+            var es = CurrentES();
             if (es == null) return false;
             var ped = new PointerEventData(es) { position = screenPos };
             var hits = new List<RaycastResult>();
@@ -56,7 +64,7 @@ namespace Kruty1918.AgentVerify
         /// </summary>
         public static bool Drag(Vector2 from, Vector2 to, int steps = 8)
         {
-            var es = EventSystem.current;
+            var es = CurrentES();
             if (es == null) return false;
             var ped = new PointerEventData(es) { position = from };
             var hits = new List<RaycastResult>();

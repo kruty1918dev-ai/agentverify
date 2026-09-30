@@ -1,6 +1,6 @@
 # AgentVerify command samples
 
-Copy one of these files to `<project>/Temp/agentverify.commands.json`,
+Copy one of these files to `<project>/agentverify.commands.json`,
 then run:
 
 ```bash

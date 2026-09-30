@@ -67,10 +67,18 @@ namespace Kruty1918.AgentVerify.Tests
             AgentLog.Install();
             AgentLog.Clear();
             var mark = AgentLog.Mark();
-            Debug.LogError("agentverify-test-error");
-            Assert.GreaterOrEqual(AgentLog.ErrorCount(mark), 1);
-            Assert.IsFalse(AgentLog.IsClean(mark));
-            AgentLog.Clear();
+            UnityEngine.TestTools.LogAssert.ignoreFailingMessages = true;
+            try
+            {
+                Debug.LogError("agentverify-test-error");
+                Assert.GreaterOrEqual(AgentLog.ErrorCount(mark), 1);
+                Assert.IsFalse(AgentLog.IsClean(mark));
+            }
+            finally
+            {
+                UnityEngine.TestTools.LogAssert.ignoreFailingMessages = false;
+                AgentLog.Clear();
+            }
         }
 
         [Test]
